@@ -1,0 +1,18 @@
+services:
+  api:
+    volumes:
+      # 1. 源码挂载（Windows 绝对路径，双反斜杠或 /d/xxx 均可）
+      - "D:\\Projectstation\\python_project\\dify\\api:/app/api"
+      # 2. 依赖卷：把镜像里已装好的 .venv 持久化
+      - dify_api_venv:/app/api/.venv
+
+  worker:
+    volumes:
+      - "D:\\Projectstation\\python_project\\dify\\api:/app/api"
+      - dify_api_venv:/app/api/.venv
+
+
+# 声明持久卷
+volumes:
+  dify_api_venv:
+    driver: local

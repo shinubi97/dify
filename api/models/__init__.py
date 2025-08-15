@@ -90,7 +90,7 @@ from .workflow import (
     WorkflowRun,
     WorkflowType,
 )
-
+from .app_api_docs import AppApiDocs 
 __all__ = [
     "APIBasedExtension",
     "APIBasedExtensionPoint",
@@ -178,4 +178,5 @@ __all__ = [
     "WorkflowToolProvider",
     "WorkflowType",
     "db",
+    "AppApiDocs",
 ]

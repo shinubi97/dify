@@ -36,6 +36,15 @@ else:
 
     app = create_app()
     celery = app.extensions["celery"]
+    
+    # 启动 MQ 服务（如果启用）
+    try:
+        from services.mq.mq_startup import mq_startup_manager
+        mq_startup_manager.start_mq_service(app)
+    except Exception as e:
+        import logging
+        logger = logging.getLogger(__name__)
+        logger.warning(f"MQ 服务启动失败，将跳过: {e}")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
