@@ -9,13 +9,13 @@ export const fetchApiDocsList = (params: {
   keyword?: string
   sort_by?: string
 }) => {
-  return get<ApiDocsListResponse>('console/api/app-api-docs', { params })
+  return get<ApiDocsListResponse>('app-api-docs', { params })
 }
 
 export const fetchApiDocDetail = (docId: string) => {
-  return get(`console/api/app-api-docs/${docId}`)
+  return get(`app-api-docs/${docId}`)
 }
 
 export const fetchApiDocByApp = (appId: string) => {
-  return get(`console/api/apps/${appId}/api-docs`)
+  return get(`apps/${appId}/api-docs`)
 }

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import { useTranslation } from 'react-i18next'
 import { RiFileTextLine } from '@remixicon/react'
@@ -9,25 +9,35 @@ import type { ApiDocsListResponse } from '@/models/api-docs'
 import { fetchApiDocsList } from '@/service/api-docs'
 import Input from '@/app/components/base/input'
 import Empty from './empty'
+import Select from '@/app/components/base/select'
 
 const getKey = (
   pageIndex: number,
   previousPageData: ApiDocsListResponse,
+  sortBy: string,
 ) => {
-  if (!pageIndex || previousPageData.has_more)
-    return { url: 'api-docs', params: { page: pageIndex + 1, limit: 30 } }
+  // 第一页或者前一页还有更多数据时，继续获取
+  if (pageIndex === 0 || (previousPageData && previousPageData.has_more))
+    return { url: 'api-docs', params: { page: pageIndex + 1, limit: 30, sort_by: sortBy } }
 
   return null
 }
 const ApiDocsList = () => {
   const { t } = useTranslation()
   const [searchKeywords, setSearchKeywords] = useState('')
+  const [sortBy, setSortBy] = useState('-created_at')
 
-  const { data: apiDocsData, setSize, isLoading } = useSWRInfinite(
-    getKey,
+  const { data: apiDocsData, setSize, isLoading, mutate } = useSWRInfinite(
+    (pageIndex, previousPageData) => getKey(pageIndex, previousPageData, sortBy),
     fetchApiDocsList,
     { revalidateFirstPage: false },
   )
+
+  // 当排序改变时，重新获取数据
+  useEffect(() => {
+    setSize(1) // 重置到第一页
+    mutate() // 重新获取数据
+  }, [sortBy, setSize, mutate])
 
   const handleLoadmore = useCallback(() => {
     setSize(size => size + 1)
@@ -59,13 +69,26 @@ const ApiDocsList = () => {
           </div>
         </div>
 
-        {/* Search */}
+        {/* Search and Sort */}
         <div className='flex items-center gap-4'>
           <div className='max-w-xs flex-1'>
             <Input
               placeholder='搜索应用名称或类型...'
               value={searchKeywords}
               onChange={e => setSearchKeywords(e.target.value)}
+            />
+          </div>
+          <div className='flex items-center gap-2'>
+            <span className='text-sm text-text-secondary'>排序:</span>
+            <Select
+              defaultValue={sortBy}
+              onSelect={(item) => setSortBy(item.value as string)}
+              items={[
+                { name: '最新创建', value: '-created_at' },
+                { name: '最早创建', value: 'created_at' },
+                { name: '最新更新', value: '-updated_at' },
+                { name: '最早更新', value: 'updated_at' },
+              ]}
             />
           </div>
         </div>

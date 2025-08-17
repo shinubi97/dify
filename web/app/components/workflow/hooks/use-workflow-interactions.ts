@@ -329,7 +329,17 @@ export const useWorkflowUpdate = () => {
         edges: initialEdges(edges, nodes),
       },
     } as any)
-    setViewport(viewport)
+    // 检查viewport是否存在，如果不存在则使用默认值
+    if (viewport && typeof viewport.x === 'number' && typeof viewport.y === 'number' && typeof viewport.zoom === 'number') {
+      setViewport(viewport)
+    } else {
+      // 使用默认的viewport值
+      setViewport({
+        x: 0,
+        y: 0,
+        zoom: 1,
+      })
+    }
   }, [eventEmitter, reactflow])
 
   return {

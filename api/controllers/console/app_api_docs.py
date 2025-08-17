@@ -91,33 +91,7 @@ class AppApiDocsListApi(Resource):
         
         args = parser.parse_args()
         
-        # 构建查询 - 使用 JOIN 来获取 app 信息
-        query = select(AppApiDocs, App).join(
-            App, AppApiDocs.app_id == App.id
-        ).where(AppApiDocs.tenant_id == current_user.current_tenant_id)
-        
-        # 应用过滤器
-        if args.get("app_id"):
-            query = query.where(AppApiDocs.app_id == args["app_id"])
-        
-        if args.get("app_mode") and args["app_mode"] != "all":
-            query = query.where(AppApiDocs.app_mode == args["app_mode"])
-        
-        if args.get("keyword"):
-            # 直接使用 JOIN 后的 App 表进行关键词搜索
-            query = query.where(App.name.ilike(f"%{args['keyword']}%"))
-        
-        # 排序
-        if args["sort_by"] == "created_at":
-            query = query.order_by(AppApiDocs.created_at.asc())
-        elif args["sort_by"] == "-created_at":
-            query = query.order_by(AppApiDocs.created_at.desc())
-        elif args["sort_by"] == "updated_at":
-            query = query.order_by(AppApiDocs.updated_at.asc())
-        elif args["sort_by"] == "-updated_at":
-            query = query.order_by(AppApiDocs.updated_at.desc())
-        
-        # 分页
+        # 分页参数
         page = args["page"]
         limit = min(args["limit"], 100)  # 限制最大每页数量
         
@@ -125,7 +99,11 @@ class AppApiDocsListApi(Resource):
             # 构建基础查询（不包含排序和分页）
             base_query = select(AppApiDocs, App).join(
                 App, AppApiDocs.app_id == App.id
-            ).where(AppApiDocs.tenant_id == current_user.current_tenant_id)
+            )
+            
+            # 只有当用户有租户ID时才进行租户过滤
+            if current_user.current_tenant_id:
+                base_query = base_query.where(AppApiDocs.tenant_id == current_user.current_tenant_id)
             
             # 应用过滤器到基础查询
             if args.get("app_id"):

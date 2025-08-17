@@ -19,7 +19,17 @@ export const useWorkflowRefreshDraft = () => {
     } = workflowStore.getState()
     setIsSyncingWorkflowDraft(true)
     fetchWorkflowDraft(`/apps/${appId}/workflows/draft`).then((response) => {
-      handleUpdateWorkflowCanvas(response.graph as WorkflowDataUpdater)
+      // 确保graph数据结构完整，如果viewport不存在则提供默认值
+      const graphData: WorkflowDataUpdater = {
+        nodes: response.graph.nodes || [],
+        edges: response.graph.edges || [],
+        viewport: response.graph.viewport || {
+          x: 0,
+          y: 0,
+          zoom: 1,
+        },
+      }
+      handleUpdateWorkflowCanvas(graphData)
       setSyncWorkflowDraftHash(response.hash)
       setEnvSecrets((response.environment_variables || []).filter(env => env.value_type === 'secret').reduce((acc, env) => {
         acc[env.id] = env.value

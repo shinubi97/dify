@@ -182,7 +182,7 @@ const ApiDocCard = ({ apiDoc }: ApiDocCardProps) => {
             >
               <div className='flex items-center gap-2'>
                 <RiTerminalBoxLine className='h-5 w-5 text-text-secondary' />
-                <span className='font-medium text-text-primary'>MQ 消息格式</span>
+                <span className='font-medium text-text-primary'>MQ 示例</span>
               </div>
               {expandedSections.mq ? (
                 <RiEyeOffLine className='h-4 w-4 text-text-secondary' />
@@ -205,31 +205,6 @@ const ApiDocCard = ({ apiDoc }: ApiDocCardProps) => {
                     {renderCodeBlock(formatJson(apiDoc.mq_info.example_message), 'mq')}
                   </div>
                 </div>
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* Input Schema */}
-        {apiDoc.inputs_schema && apiDoc.inputs_schema.length > 0 && (
-          <div className='border-border rounded-lg border'>
-            <button
-              onClick={() => toggleSection('schema')}
-              className='flex w-full items-center justify-between p-4 text-left transition-colors hover:bg-background-body'
-            >
-              <div className='flex items-center gap-2'>
-                <RiCodeLine className='h-5 w-5 text-text-secondary' />
-                <span className='font-medium text-text-primary'>输入参数结构</span>
-              </div>
-              {expandedSections.schema ? (
-                <RiEyeOffLine className='h-4 w-4 text-text-secondary' />
-              ) : (
-                <RiEyeLine className='h-4 w-4 text-text-secondary' />
-              )}
-            </button>
-            {expandedSections.schema && (
-              <div className='px-4 pb-4'>
-                {renderCodeBlock(formatJson(apiDoc.inputs_schema), 'schema')}
               </div>
             )}
           </div>

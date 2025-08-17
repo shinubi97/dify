@@ -188,17 +188,29 @@ def _generate_mock_inputs(input_schema):
 
 def _generate_curl_example(base_url, api_key, mock_inputs, workflow_id):
     """Generate curl example."""
+    # 手动构建inputs的JSON字符串，控制缩进
+    inputs_json = json.dumps(mock_inputs, indent=2, ensure_ascii=False)
+    # 将每行缩进增加4个空格，使其在JSON中正确对齐
+    inputs_lines = inputs_json.split('\n')
+    indented_inputs = '\n'.join('    ' + line for line in inputs_lines)
+    
     return f"""curl -X POST '{base_url}/v1/workflows/{workflow_id}/run' \\
 --header 'Authorization: Bearer {api_key}' \\
 --header 'Content-Type: application/json' \\
 --data-raw '{{
-    "inputs": {json.dumps(mock_inputs, indent=2, ensure_ascii=False)},
+    "inputs": {indented_inputs},
     "user": "abc-123"
 }}'"""
 
 
 def _generate_python_example(base_url, api_key, mock_inputs, workflow_id):
     """Generate Python example."""
+    # 手动构建inputs的JSON字符串，控制缩进
+    inputs_json = json.dumps(mock_inputs, indent=4, ensure_ascii=False)
+    # 将每行缩进增加4个空格，使其在data字典中正确对齐
+    inputs_lines = inputs_json.split('\n')
+    indented_inputs = '\n'.join('    ' + line for line in inputs_lines)
+    
     return f"""import requests
 
 url = "{base_url}/v1/workflows/{workflow_id}/run"
@@ -207,7 +219,7 @@ headers = {{
     "Content-Type": "application/json"
 }}
 data = {{
-    "inputs": {json.dumps(mock_inputs, indent=2, ensure_ascii=False)},
+    "inputs": {indented_inputs},
     "user": "abc-123"
 }}
 
