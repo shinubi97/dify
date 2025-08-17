@@ -5,6 +5,8 @@ services:
       - "D:\\Projectstation\\python_project\\dify\\api:/app/api"
       # 2. 依赖卷：把镜像里已装好的 .venv 持久化
       - dify_api_venv:/app/api/.venv
+    ports:
+      - "5001:5001"
 
   worker:
     volumes:
