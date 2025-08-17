@@ -1,5 +1,5 @@
 import logging
-from typing import Callable
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +13,8 @@ class RocketMQClient:
         self.consumer_is_shutdown = False
         
         try:
-            from rocketmq.client import Producer, Message as ClientMessage, PushConsumer
+            from rocketmq.client import Message as ClientMessage
+            from rocketmq.client import Producer, PushConsumer
             self.Producer = Producer
             self.ClientMessage = ClientMessage
             self.PushConsumer = PushConsumer
@@ -22,7 +23,7 @@ class RocketMQClient:
             self.consumer = self._create_consumer()
             
         except ImportError as e:
-            logger.error("RocketMQ client library not found. Please install rocketmq-client-python")
+            logger.exception("RocketMQ client library not found. Please install rocketmq-client-python")
             raise ImportError("rocketmq-client-python is required for RocketMQ support") from e
 
     def _create_producer(self):

@@ -101,6 +101,9 @@ packages = []
 default-groups = ["storage", "tools", "vdb"]
 package = false
 
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.12.9"
+
 [dependency-groups]
 
 ############################################################

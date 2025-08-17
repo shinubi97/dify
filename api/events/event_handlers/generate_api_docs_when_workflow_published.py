@@ -1,11 +1,10 @@
-import logging
 import json
+import logging
 import uuid
 
 from events.app_event import app_published_workflow_was_updated
 from extensions.ext_database import db
 from models.model import ApiToken
-from flask import request
 
 logger = logging.getLogger(__name__)
 
@@ -22,7 +21,7 @@ def handle(sender, **kwargs):
     try:
         _generate_api_docs_and_mq_info(app, published_workflow)
     except Exception as e:
-        logger.error(f"Failed to generate API docs for workflow {published_workflow.id}: {str(e)}")
+        logger.exception(f"Failed to generate API docs for workflow {published_workflow.id}: {str(e)}")
 
 
 def _generate_api_docs_and_mq_info(app, workflow):
@@ -80,15 +79,16 @@ def _generate_api_docs_and_mq_info(app, workflow):
 def _get_dynamic_base_url(app):
     """Get dynamic base URL for the app."""
     try:
-        from configs import dify_config
         from flask import request
+
+        from configs import dify_config
         
         # 直接复制 Dify 的逻辑，但不添加 "/v1" 后缀
         base_url = dify_config.SERVICE_API_URL or request.host_url.rstrip("/")
         return base_url
         
     except Exception as e:
-        logger.error(f"Failed to get base URL: {str(e)}")
+        logger.exception(f"Failed to get base URL: {str(e)}")
         # 如果出错，回退到请求主机地址
         return request.host_url.rstrip("/")
         
@@ -133,7 +133,7 @@ def _extract_workflow_inputs(workflow):
         return input_schema
         
     except Exception as e:
-        logger.error(f"Failed to extract workflow inputs: {str(e)}")
+        logger.exception(f"Failed to extract workflow inputs: {str(e)}")
         return []
 
 
@@ -146,9 +146,9 @@ def _generate_mock_inputs(input_schema):
         param_type = param["type"]
         
         if param_type == "text-input":
-            mock_inputs[param_name] = f"mock_short_text"
+            mock_inputs[param_name] = "mock_short_text"
         elif param_type == "paragraph":
-            mock_inputs[param_name] = f"mock_paragraph"
+            mock_inputs[param_name] = "mock_paragraph"
         elif param_type == "select":
             options = param.get("options", [])
             if options:
@@ -244,8 +244,8 @@ def _generate_mq_info(workflow, api_key):
 def _save_api_docs(api_docs):
     """Save API documentation to database."""
     try:
-        from models.app_api_docs import AppApiDocs
         from libs.login import current_user
+        from models.app_api_docs import AppApiDocs
         
         # 获取用户ID（如果可用）
         user_id = None
@@ -276,7 +276,7 @@ def _save_api_docs(api_docs):
         return doc
         
     except Exception as e:
-        logger.error(f"Failed to save API docs to database: {str(e)}")
+        logger.exception(f"Failed to save API docs to database: {str(e)}")
         # 回退到日志记录
         logger.info(f"API docs (fallback to log): {json.dumps(api_docs, indent=2)}")
         return None

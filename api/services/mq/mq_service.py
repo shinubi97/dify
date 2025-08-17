@@ -3,7 +3,6 @@ import logging
 import queue
 import threading
 import time
-from typing import Dict, List
 
 from .client.mq_client import MQClient
 from .handlers.base_handler import BaseBizHandler
@@ -43,7 +42,7 @@ class MQService:
         
         # 线程控制
         self._running = False
-        self._consumer_threads: List[threading.Thread] = []
+        self._consumer_threads: list[threading.Thread] = []
         
         # 消息队列
         self.message_queue: queue.Queue = queue.Queue(maxsize=1000)
@@ -54,7 +53,7 @@ class MQService:
         self._initialized = True
         logger.info(f"MQService 初始化完成，Topic: {topic}, Group: {group}")
     
-    def _init_handlers(self) -> Dict[str, BaseBizHandler]:
+    def _init_handlers(self) -> dict[str, BaseBizHandler]:
         """初始化消息处理器"""
         handlers = {}
         
@@ -120,14 +119,14 @@ class MQService:
                 try:
                     self._process_message(msg_tag, msg_body)
                 except Exception as e:
-                    logger.error(f"处理消息失败: {str(e)}")
+                    logger.exception(f"处理消息失败: {str(e)}")
                 finally:
                     self.message_queue.task_done()
                     
             except queue.Empty:
                 continue
             except Exception as e:
-                logger.error(f"消费者线程异常: {str(e)}")
+                logger.exception(f"消费者线程异常: {str(e)}")
         
         logger.info(f"消费者线程 {worker_id} 退出")
     
@@ -158,10 +157,10 @@ class MQService:
                 logger.debug(f"消息加入队列 tag={msg_tag}, 队列大小: {self.message_queue.qsize()}")
                 return True
             except queue.Full:
-                logger.error(f"消息队列已满，丢弃消息 tag={msg_tag}")
+                logger.exception(f"消息队列已满，丢弃消息 tag={msg_tag}")
                 return False
             except Exception as e:
-                logger.error(f"加入消息队列失败: {str(e)}")
+                logger.exception(f"加入消息队列失败: {str(e)}")
                 return False
         
         # 构建订阅表达式
@@ -210,7 +209,7 @@ class MQService:
         try:
             self.mq_client.shutdown()
         except Exception as e:
-            logger.error(f"关闭MQ客户端时出错: {str(e)}")
+            logger.exception(f"关闭MQ客户端时出错: {str(e)}")
         
         logger.info("MQ服务已关闭")
     

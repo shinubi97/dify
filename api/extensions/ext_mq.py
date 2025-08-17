@@ -1,5 +1,4 @@
 import logging
-from typing import Optional
 
 from configs import dify_config
 from dify_app import DifyApp
@@ -68,7 +67,7 @@ def init_app(app: DifyApp):
         logger.info("MQ extension initialized successfully")
         
     except Exception as e:
-        logger.error(f"Failed to initialize MQ extension: {e}")
+        logger.exception(f"Failed to initialize MQ extension: {e}")
         # 根据配置决定是否抛出异常
         if dify_config.DEBUG:
             raise

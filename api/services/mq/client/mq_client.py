@@ -1,5 +1,6 @@
 import logging
-from typing import Callable, Optional
+from collections.abc import Callable
+from typing import Optional
 
 from configs import dify_config
 
@@ -15,7 +16,7 @@ class MQClient:
     def __init__(self, topic: str, group: str):
         self.topic = topic
         self.group = group
-        self._client: Optional['RocketMQClient | ONSClient'] = None
+        self._client: Optional[RocketMQClient | ONSClient] = None
         self._initialize_client()
 
     def _initialize_client(self):
@@ -42,7 +43,7 @@ class MQClient:
                 raise ValueError(f"Unsupported MQ environment: {dify_config.MQ_ENVIRONMENT}")
                 
         except Exception as e:
-            logger.error(f"Failed to initialize MQ client: {e}")
+            logger.exception(f"Failed to initialize MQ client: {e}")
             raise
 
     def send_message(self, keys: str, tags: str, body: str) -> any:
@@ -73,7 +74,7 @@ class MQClient:
                     logger.warning(f"Unknown message type: {type(msg)}")
                     return True
             except Exception as e:
-                logger.error(f"Error in message callback: {e}")
+                logger.exception(f"Error in message callback: {e}")
                 return False
         
         self._client.subscribe(self.topic, self.group, wrapped_callback, expression)

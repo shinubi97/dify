@@ -1,4 +1,5 @@
 import logging
+
 from events.app_event import app_was_created
 from extensions.ext_database import db
 from models.model import ApiToken
@@ -16,7 +17,7 @@ def handle(sender, **kwargs):
         _create_api_key_for_app(app)
         
     except Exception as e:
-        logger.error(f"Unexpected error in API key creation for app {app.id}: {str(e)}")
+        logger.exception(f"Unexpected error in API key creation for app {app.id}: {str(e)}")
 
 
 def _create_api_key_for_app(app):

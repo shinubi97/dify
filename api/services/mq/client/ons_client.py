@@ -1,5 +1,5 @@
 import logging
-from typing import Callable, Optional
+from collections.abc import Callable
 
 logger = logging.getLogger(__name__)
 
@@ -23,7 +23,7 @@ class ONSClient:
             self.TopicMessage = TopicMessage
             
         except ImportError as e:
-            logger.error("ONS client library not found. Please install mq-http-sdk")
+            logger.exception("ONS client library not found. Please install mq-http-sdk")
             raise ImportError("mq-http-sdk is required for ONS support") from e
 
     def _get_client(self):
@@ -39,7 +39,7 @@ class ONSClient:
             producer = client.get_producer(self.instance_id, topic)
             return producer.publish_message(msg)
         except self.MQExceptionBase as e:
-            logger.error(f"发送 ONS 消息失败: {e}")
+            logger.exception(f"发送 ONS 消息失败: {e}")
             raise
 
     def subscribe(self, topic: str, group: str, callback: Callable, expression: str = "*"):
@@ -63,10 +63,10 @@ class ONSClient:
             except self.MQExceptionBase as e:
                 if e.type == "MessageNotExist":
                     continue
-                logger.error(f"ONS 消息消费失败: {e}")
+                logger.exception(f"ONS 消息消费失败: {e}")
                 continue
             except Exception as e:
-                logger.error(f"消息处理异常: {e}")
+                logger.exception(f"消息处理异常: {e}")
                 continue
 
     def shutdown(self):

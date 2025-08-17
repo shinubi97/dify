@@ -14,7 +14,7 @@ class MQStartupManager:
     """
     
     def __init__(self):
-        self.mq_service: Optional['MQService'] = None
+        self.mq_service: Optional[MQService] = None
         self._setup_signal_handlers()
     
     def _setup_signal_handlers(self):
@@ -40,7 +40,7 @@ class MQStartupManager:
             else:
                 logger.warning("MQ 扩展未找到，跳过启动")
         except Exception as e:
-            logger.error(f"启动 MQ 服务失败: {e}")
+            logger.exception(f"启动 MQ 服务失败: {e}")
             if app.config.get('DEBUG'):
                 raise
     
@@ -51,7 +51,7 @@ class MQStartupManager:
                 self.mq_service.shutdown()
                 logger.info("MQ 服务已关闭")
             except Exception as e:
-                logger.error(f"关闭 MQ 服务时出错: {e}")
+                logger.exception(f"关闭 MQ 服务时出错: {e}")
 
 
 # 全局实例

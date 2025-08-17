@@ -9,6 +9,7 @@ from .account import (
     TenantStatus,
 )
 from .api_based_extension import APIBasedExtension, APIBasedExtensionPoint
+from .app_api_docs import AppApiDocs
 from .dataset import (
     AppDatasetJoin,
     Dataset,
@@ -90,7 +91,7 @@ from .workflow import (
     WorkflowRun,
     WorkflowType,
 )
-from .app_api_docs import AppApiDocs 
+
 __all__ = [
     "APIBasedExtension",
     "APIBasedExtensionPoint",
@@ -103,6 +104,7 @@ __all__ = [
     "App",
     "AppAnnotationHitHistory",
     "AppAnnotationSetting",
+    "AppApiDocs",
     "AppDatasetJoin",
     "AppMCPServer",  # Added
     "AppMode",
@@ -178,5 +180,4 @@ __all__ = [
     "WorkflowToolProvider",
     "WorkflowType",
     "db",
-    "AppApiDocs",
 ]

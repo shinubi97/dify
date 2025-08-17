@@ -1,19 +1,17 @@
 # api/models/app_api_docs.py
 from datetime import datetime
-from typing import Dict, Any, List, Optional
+from typing import Any, Optional
 
 import sqlalchemy as sa
-from sqlalchemy import DateTime, String, Text, func
-from sqlalchemy.dialects.postgresql import UUID, JSONB
+from sqlalchemy import DateTime, String, func
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.orm import Mapped, mapped_column
+
 from libs.datetime_utils import naive_utc_now
-
-
-from .base import Base
 from models.types import StringUUID
 
+from .base import Base
 from .engine import db
-
 
 
 class AppApiDocs(Base):
@@ -49,12 +47,12 @@ class AppApiDocs(Base):
     python_examples: Mapped[Optional[str]] = mapped_column(sa.TEXT, nullable=True)
     
     # 输入输出模式
-    inputs_schema: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
-    outputs_schema: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
-    mock_data: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    inputs_schema: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    outputs_schema: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    mock_data: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
     
     # MQ 配置
-    mq_info: Mapped[Optional[Dict[str, Any]]] = mapped_column(JSONB, nullable=True)
+    mq_info: Mapped[Optional[dict[str, Any]]] = mapped_column(JSONB, nullable=True)
     
     # 审计字段
     created_by: Mapped[str] = mapped_column(StringUUID, nullable=False)
@@ -78,10 +76,10 @@ class AppApiDocs(Base):
         workflow_id: Optional[str] = None,
         curl_examples: Optional[str] = None,
         python_examples: Optional[str] = None,
-        inputs_schema: Optional[Dict[str, Any]] = None,
-        outputs_schema: Optional[Dict[str, Any]] = None,
-        mock_data: Optional[Dict[str, Any]] = None,
-        mq_info: Optional[Dict[str, Any]] = None,
+        inputs_schema: Optional[dict[str, Any]] = None,
+        outputs_schema: Optional[dict[str, Any]] = None,
+        mock_data: Optional[dict[str, Any]] = None,
+        mq_info: Optional[dict[str, Any]] = None,
         user_id: Optional[str] = None
     ) -> "AppApiDocs":
         """Create or update API documentation."""
@@ -146,7 +144,7 @@ class AppApiDocs(Base):
         per_page: int = 20,
         app_mode: Optional[str] = None,
         app_id: Optional[str] = None
-    ) -> tuple[List["AppApiDocs"], int]:
+    ) -> tuple[list["AppApiDocs"], int]:
         """Get paginated list of API documentation."""
         query = db.session.query(cls).where(cls.tenant_id == tenant_id)
         
@@ -160,7 +158,7 @@ class AppApiDocs(Base):
         
         return docs_list, total_count
     
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         """Convert model to dictionary."""
         return {
             "id": str(self.id),

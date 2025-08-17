@@ -1,30 +1,23 @@
 import json
 import logging
 import uuid
-from typing import Dict, List, Optional
 
 from flask import Flask, current_app
-from werkzeug.exceptions import Unauthorized, Forbidden, NotFound
+from werkzeug.exceptions import Forbidden, NotFound, Unauthorized
 
-from extensions.ext_database import db
-from models.model import App, EndUser, AppMode
+# 复用 Dify 原始的验证逻辑
+from controllers.service_api.wraps import FetchUserArg, WhereisUserArg, validate_app_token
 from core.app.entities.app_invoke_entities import InvokeFrom
-from services.app_generate_service import AppGenerateService
-from services.errors.app import WorkflowNotFoundError, WorkflowIdFormatError
-from services.errors.llm import InvokeRateLimitError
 from core.errors.error import (
     ModelCurrentlyNotSupportError,
     ProviderTokenNotInitError,
     QuotaExceededError,
 )
 from core.model_runtime.errors.invoke import InvokeError
-
-# 复用 Dify 原始的验证逻辑
-from controllers.service_api.wraps import (
-    validate_app_token,
-    FetchUserArg,
-    WhereisUserArg
-)
+from models.model import App, AppMode, EndUser
+from services.app_generate_service import AppGenerateService
+from services.errors.app import WorkflowIdFormatError, WorkflowNotFoundError
+from services.errors.llm import InvokeRateLimitError
 
 from .base_handler import BaseBizHandler
 
@@ -39,10 +32,10 @@ class WorkflowExecutionHandler(BaseBizHandler):
         self.app = app
 
     @staticmethod
-    def get_supported_tags() -> List[str]:
+    def get_supported_tags() -> list[str]:
         return ["workflow_execution"]
 
-    def validate_message(self, data: Dict) -> Dict:
+    def validate_message(self, data: dict) -> dict:
         """验证工作流执行消息格式"""
         # 先执行基础验证
         base_result = super().validate_message(data)
@@ -125,7 +118,7 @@ class WorkflowExecutionHandler(BaseBizHandler):
                             if node_data.get("node_type") == "end":
                                 outputs.update(node_data.get("outputs", {}))
             except Exception as stream_error:
-                logger.error(f"处理流式响应时出错: {str(stream_error)}")
+                logger.exception(f"处理流式响应时出错: {str(stream_error)}")
                 outputs = {"error": "Stream processing error"}
             
             return {
@@ -158,7 +151,7 @@ class WorkflowExecutionHandler(BaseBizHandler):
 
 
 
-    def _execute_all_in_context(self, api_key: str, inputs: dict, user_id: str, response_mode: str, files: list, workflow_id: str) -> Dict:
+    def _execute_all_in_context(self, api_key: str, inputs: dict, user_id: str, response_mode: str, files: list, workflow_id: str) -> dict:
         """在 Flask 应用上下文中执行所有操作（数据库查询 + 工作流执行）"""
         # 获取应用实例
         if self.app:
@@ -176,7 +169,7 @@ class WorkflowExecutionHandler(BaseBizHandler):
             logger.info(f"工作流执行完成: {result}")
             return result
 
-    def _do_handle(self, data: Dict) -> Dict:
+    def _do_handle(self, data: dict) -> dict:
         """处理工作流执行请求"""
         logger.info(f"接收到工作流执行消息: {json.dumps(data, ensure_ascii=False)}")
         
@@ -193,37 +186,37 @@ class WorkflowExecutionHandler(BaseBizHandler):
             return self._execute_all_in_context(api_key, inputs, user_id, response_mode, files, workflow_id)
             
         except Unauthorized as e:
-            logger.error(f"认证失败: {str(e)}")
+            logger.exception(f"认证失败: {str(e)}")
             return {
                 "status": 0,
                 "msg": f"认证失败: {str(e)}"
             }
         except Forbidden as e:
-            logger.error(f"权限被拒绝: {str(e)}")
+            logger.exception(f"权限被拒绝: {str(e)}")
             return {
                 "status": 0,
                 "msg": f"权限被拒绝: {str(e)}"
             }
         except NotFound as e:
-            logger.error(f"资源未找到: {str(e)}")
+            logger.exception(f"资源未找到: {str(e)}")
             return {
                 "status": 0,
                 "msg": f"资源未找到: {str(e)}"
             }
         except (WorkflowNotFoundError, WorkflowIdFormatError) as e:
-            logger.error(f"工作流错误: {str(e)}")
+            logger.exception(f"工作流错误: {str(e)}")
             return {
                 "status": 0,
                 "msg": f"工作流错误: {str(e)}"
             }
         except (ProviderTokenNotInitError, ModelCurrentlyNotSupportError, QuotaExceededError) as e:
-            logger.error(f"模型服务错误: {str(e)}")
+            logger.exception(f"模型服务错误: {str(e)}")
             return {
                 "status": 0,
                 "msg": f"模型服务错误: {str(e)}"
             }
         except (InvokeRateLimitError, InvokeError) as e:
-            logger.error(f"调用错误: {str(e)}")
+            logger.exception(f"调用错误: {str(e)}")
             return {
                 "status": 0,
                 "msg": f"调用错误: {str(e)}"

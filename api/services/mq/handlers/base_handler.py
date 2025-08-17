@@ -1,7 +1,6 @@
 import logging
 import uuid
 from abc import ABC, abstractmethod
-from typing import Dict, List
 
 logger = logging.getLogger(__name__)
 
@@ -9,7 +8,7 @@ logger = logging.getLogger(__name__)
 class BaseBizHandler(ABC):
     """业务处理器基类"""
 
-    def handle(self, data: Dict) -> Dict:
+    def handle(self, data: dict) -> dict:
         """处理消息的主方法"""
         request_id = data.get("requestId", str(uuid.uuid4()))
         
@@ -39,7 +38,7 @@ class BaseBizHandler(ABC):
                 "msg": str(e)
             }
 
-    def validate_message(self, data: Dict) -> Dict:
+    def validate_message(self, data: dict) -> dict:
         """
         验证消息格式是否符合当前处理器要求
         返回: {"valid": True/False, "reason": "错误原因"}
@@ -52,7 +51,7 @@ class BaseBizHandler(ABC):
         return {"valid": True, "reason": ""}
 
     @abstractmethod
-    def _do_handle(self, data: Dict) -> Dict:
+    def _do_handle(self, data: dict) -> dict:
         """
         实际的消息处理逻辑，子类必须实现
         """
@@ -60,6 +59,6 @@ class BaseBizHandler(ABC):
 
     @staticmethod
     @abstractmethod
-    def get_supported_tags() -> List[str]:
+    def get_supported_tags() -> list[str]:
         """返回处理器支持的标签列表，子类必须实现"""
         pass

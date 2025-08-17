@@ -43,10 +43,8 @@ api.add_resource(AppImportConfirmApi, "/apps/imports/<string:import_id>/confirm"
 api.add_resource(AppImportCheckDependenciesApi, "/apps/imports/<string:app_id>/check-dependencies")
 
 # Import other controllers
-from . import admin, apikey, extension, feature, ping, setup, version
-
 # Import app API docs controller
-from . import app_api_docs
+from . import admin, apikey, app_api_docs, extension, feature, ping, setup, version
 
 # Import app controllers
 from .app import (

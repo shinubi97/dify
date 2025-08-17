@@ -1,9 +1,8 @@
-from typing import Any
 
 import flask_restful
 from flask_login import current_user
 from flask_restful import Resource, fields, marshal_with, reqparse
-from sqlalchemy import select, desc
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from extensions.ext_database import db
